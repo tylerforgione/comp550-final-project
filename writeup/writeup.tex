@@ -57,6 +57,16 @@ Further, research has shown that fine-tuning RAG-augmented models may improve th
 
 \subsection{T5}
 
+T5 is an encoder-decoder developed by Google. Its intruction-tuned version, Flan-T5 \cite{chung2022scalinginstructionfinetunedlanguagemodels} is what was used for this part of the project. The version used was flan-t5-xl, the largest available model. The reason for using this model was twofold: it would be most probable to get the best baseline accuracy due to its size, and it would be less likely to overfit (again due to its size). In this case, overfitting meant collapsing to selecting the same answer on multiple choice questions.
+
+Further, this part of the project used a FAISS \cite{douze2025faisslibrary} index of MedRAG's Wikipedia, textbooks, and StatPearl corpora. The textbooks and StatPearl corpora were quite small, so they were used in full, while only 150k Wikipedia samples were chosen at random. These were then chunked into 100-word passages and indexed using FAISS. All in all, this came out to only 2GB of data; far less than the entirety of MedRAG, which is over 100GB.
+
+To save time and memory, the model was allowed to use the top 3 contexts scored by the MedCPT retriever \cite{Jin_2023}. Then, the model was trained on QA data with RAG. That is, the model was allowed to train by answering retrieval-augmented questions, as opposed to just training on the questions alone. The idea was to allow the model to learn patterns in the questions, as well as learn information from the contexts retrieved from the FAISS index.
+
+Because T5-xl is an extra large model, we furthered our efforts to save memory. Thus, we used 4-bit quantization \cite{dettmers2023qloraefficientfinetuningquantized} and Low-Rank Adaptation (LoRA) \cite{hu2021loralowrankadaptationlarge}. The quantization technique decreases the precision of the floating points used from default (16-bit in this case) to 4-bit. This saves memory at the cost of some accuracy, but it has been shown that accuracy does not suffer as much as expected. The last of our efforts used LoRA, which only uses a small subset of trainable parameters. The idea is that the updated weights are typically of low rank, so instead of training the full model and only updating low-rank weights, we only train with the low-rank weights. This makes the model much easier to fit in memory and decreases training time substantially.
+
+This fine-tuned model was then tested on MedMCQA, USMLE, and GPQA.
+
 \section{Results}
 
 \subsection{GPT}
