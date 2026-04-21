@@ -9,15 +9,68 @@
 \title{COMP550 Final Project Writeup}
 
 \author{
-    \IEEEauthorblockN{}
+    \IEEEauthorblockN{James Lynch, Jessica Wang, Tyler Forgione}
 }
 
-\date{}
+\date{April 23rd, 2026}
 
 \bibliographystyle{IEEEtran}
 
 \begin{document}
 
 \maketitle
+
+\begin{abstract}
+    Placeholder
+\end{abstract}
+
+
+\section{Introduction}
+
+Large Language Models (LLMs) benefit from the fact that the number of parameters they have is well above millions. Some even reach billions of parameters. They also benefit from the amount of data they are able to use during pre-training. This makes the models competent at a wide range of tasks.
+
+Typical LLMs, used by many globally, are extremely well established at question answering (QA). The amount of knowledge they have on a number of different subjects makes them capable of answering most questions, save for some extremely difficult PhD level ones.
+
+The biomedical field is one of the more difficult ones for the average LLM because of the amount of data in the field as well as the interactions between different parts of it. For example, drugs interact with diseases which have symptoms which may be side effects of other drugs or other diseases altogether. The model must be able to, given a question, filter through this information and deliver a clear and concise answer. In this project, we use datasets sampled from medical QA tests like the USMLE \cite{jin2020disease}, a dataset pulled directly from medical exams. We also use MedMCQA \cite{pmlr-v174-pal22a}, another multiple-choice QA dataset pulled from exams. These datasets include the types of questions that would stump smaller or less expressive models.
+
+The USMLE dataset includes questions about choosing the correct condition given a number of symptoms and a patient's information. MedMCQA contains more textbook information, including facts about treatments, drugs, pathologies, and more.
+
+Larger LLMs are able to answer these questions well above chance level \cite{liévin2023largelanguagemodelsreason}, however smaller models, like BERT \cite{devlin2019bertpretrainingdeepbidirectional}, are still in the $30\%$ range on these 4 option questions.
+
+We explore whether models trained explicitly on biomedical question-answer data can come close to outperforming large models that are trained on a massive amount of general data. We attempt to use techniques in order to improve training as well as inference with as little cost as possible.
+
+\section{Related Work}
+
+Numerous models have already attempted to train on large biomedical corpora such as PubMed. One such model, PubMedBERT is based on BERT and pretrained from scratch on unlabeled biomedical data, mostly PubMed papers and abstracts \cite{Gu_2021}. Other models have been focused on training on biomedical data as a whole, as opposed to just papers. These models also perform well on the datasets described in the previous section. BioGPT \cite{Luo_2022} was a response to BioBERT \cite{Lee_2019} which used GPT's generative abilities to improve performance.
+
+All of these models are pre-trained from scratch on millions (or more) of passages from biomedical textbooks, papers, articles, and more. Thus, they are trained on multiple GPUs for longer than we could afford to wait. In order to improve training times, as well as accuracy, we decided to implement retrieval augmented generation (RAG) \cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp}, a technique in which the model retrieves data based on the prompt which it can use as context for the given task. It is a related but different idea to in-context learning. With RAG, the models are injecting explicit data that they can use for inference, while with ICL, this data is implicit to the prompt.
+
+The benefit of RAG is that the model need not train on all the data but can instead just pull valuable passages that it can use to come up with an answer. This has previously been done in the biomedical field, starting with MedRAG \cite{xiong2024benchmarkingretrievalaugmentedgenerationmedicine}, an RAG framework that has been shown to improve the accuracy of GPT3.5 on most tasks, including the QA we look at. It is important to note that both the dataset the contexts are pulled from, as well as the retriever, are important in improving the model's performance. For example, Wikipedia's general knowledge may not help in USMLE style questions where knowing how conditions manifest matters. In that case, case studies seen in PubMed may be better.
+
+Further, research has shown that fine-tuning RAG-augmented models may improve their accuracy even further \cite{hassan2025optimizingmedicalquestionansweringsystems}.
+
+\section{Methods}
+
+\subsection{GPT}
+
+\subsection{BERT}
+
+\subsection{T5}
+
+\section{Results}
+
+\subsection{GPT}
+
+\subsection{BERT}
+
+\subsection{T5}
+
+\section{Discussion \& Conclusion}
+
+\section{Statement of Contributions}
+
+All preprocessing, training, and testing was done separately. James worked with GPT, Jessica worked with BERT, and Tyler worked with T5.
+
+\bibliography{ref}
 
 \end{document}
