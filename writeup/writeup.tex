@@ -2,6 +2,8 @@
 
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{justification=centering}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{hyperref}
@@ -68,6 +70,47 @@ Because T5-xl is an extra large model, we furthered our efforts to save memory. 
 This fine-tuned model was then tested on MedMCQA, USMLE, and GPQA.
 
 \section{Results}
+
+The baseline accuracies for the T5 model are shown in table \ref{tab:medmcqa_preft}. Immediately, it is noticeable that USMLE is a harder dataset. This is due to the fact that instead of exam-like questions, they are more case studies. As mentioned in the introduction, these questions ask the student to correctly identify a condition based on some symptoms and patient factors.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Method} & \textbf{MedMCQA} & \textbf{USMLE} \\
+        \hline
+        Pre-FT Baseline & 0.282            & 0.280          \\
+        Pre-FT RAG      & 0.322            & 0.273          \\
+        \hline
+    \end{tabular}
+    \caption{T5 accuracy on test datasets before fine-tuning.}
+    \label{tab:medmcqa_preft}
+\end{table}
+
+The model was then fine-tuned on balanced split over all labels from both USMLE and MedMCQA. In total, the model was trained on $22696$ examples, including the question \emph{and} contexts. See figure \ref{fig:t5train} for the loss, computed every 300 steps. To make sure the model was not collapsing, we tracked the number of outputs of each label. These did not show any crazy results and will not be shown.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{t5train.png}
+    \caption{Training and validation loss visualization of flan-T5-xl}
+    \label{fig:t5train}
+\end{figure}
+
+Finally, the model was retested on the exact same test set as before fine-tuning. The results are shown in table \ref{tab:medmcqa_postft}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Method} & \textbf{MedMCQA} & \textbf{USMLE} \\
+        \hline
+        Pre-FT Baseline & 0.236            & 0.225          \\
+        Pre-FT RAG      & 0.239            & 0.227          \\
+        \hline
+    \end{tabular}
+    \caption{T5 accuracy on test datasets after fine-tuning.}
+    \label{tab:medmcqa_postft}
+\end{table}
 
 \subsection{GPT}
 
