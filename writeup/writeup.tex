@@ -58,6 +58,21 @@ Further, research has shown that fine-tuning RAG-augmented models may improve th
 \subsection{GPT}
 
 \subsection{BERT}
+BERT \cite{devlin2019bertpretrainingdeepbidirectional} is an encoder-only transformer. This project aims to compare this general-purpose model and BioBERT \cite{Lee_2019} which was pre-trained on biomedical data text.
+
+For multiple-choice QA, each (question, answer) pair is encoded independently as 
+\begin{equation}
+    \texttt{[CLS]}\ q\ \texttt{[SEP]}\ a_i\ \texttt{[SEP]}
+\end{equation}
+The classification token embedding is then passed through a linear head to produce a score per option, which are are normalised with softmax and trained via cross-entropy. To avoid the cost of full finetuning, we used LoRA \cite{hu2021loralowrankadaptationlarge} with a rank of 32, which drastically reduces trainable parameters while maintaining comparable performance. Hyperparameters (learning rate $\in \{10^{-4},3\times10^{-4},5\times10^{-4}\}$ and batch size $\in \{4,8\}$) were selected via a one-epoch grid search using the MedMCQA validation accuracy. Using the combination with the highest validation accuracy, models were finetuned on a shuffled combination of MedMCQA and USMLE, all with four options.
+
+In order to increase accuracy, we also trained RAG \cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp} variants. For each training example, the top three passages retrieved by the FAISS index \cite{douze2025faisslibrary} were prepended to the question before tokenisation, producing inputs of the form: 
+\begin{equation}
+    \texttt{[CLS]}\ c_1\ c_2\ c_3\ q\ \texttt{[SEP]}\ a_i\ \texttt{[SEP]}
+\end{equation}
+with a 512-token limit. The retrieval corpus consisted of three MedRAG corpora: the medical textbooks corpora, the StatPearls corpora and a 150k sample of the Wikipedia corpus. All passages were chunked into 100-word segments and embedded with MedCPT \cite{Jin_2023}. Queries were encoded and matched via inner product to return the top three contexts.
+
+The final model was tested on MedMCQA, USMLE and GPQA.
 
 \subsection{T5}
 
