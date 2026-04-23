@@ -25,7 +25,7 @@
 \maketitle
 
 \begin{abstract}
-    Placeholder
+    We tried to replicate results on question answering data from big biomedical models like BioGPT or BioBERT while using far less training data. We fine-tuned three models, GPT-2, BERT, and T5, on QA data and used retrieval augmented generation techniques to improve their performance.
 \end{abstract}
 
 
@@ -120,9 +120,31 @@ Finally, the model was retested on the exact same test set as before fine-tuning
     \label{tab:medmcqa_postft}
 \end{table}
 
+As a last resort, we checked whether the prompt was an issue. Thus, we tried including the options into the FAISS context retrieval and achieved the results in table \ref{tab:rag_results}.
+
+\begin{table}[h]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt} % default is ~6pt
+    \begin{tabular}{l c}
+        \hline
+        \textbf{Dataset}                 & \textbf{Accuracy} \\
+        \hline
+        USMLE (Post-FT RAG, q+options)   & 0.228             \\
+        MedMCQA (Post-FT RAG, q+options) & 0.290             \\
+        \hline
+    \end{tabular}
+    \caption{Test set accuracy for Post-FT + RAG (question + options)}
+    \label{tab:rag_results}
+\end{table}
+
 \section{Discussion \& Conclusion}
 
+Our T5 model had an accuracy increase of $4\%$ on the MedMCQA test set but actually dropped in accuracy on the USMLE dataset when only using RAG (no fine-tuning). This is likely due to the more reasoning-heavy nature of USMLE. However, after fine-tuning, the model performed worse on both datasets overall, dipping below chance. Originally, this was caused by a collapse in the model's selection of labels (e.g: always selecting C). After fixing this, the model still performs just as poorly.
 
+The drop in performance could be due to overfitting, however the train and validation loss do not corroborate this. It would have been better to track accuracy on the training and validation set, but this would've increased training time too much.
+
+After looking at the poor retrievals for certain questions, we opted to use the same evaluation, except for including the options into the FAISS retrieval. These results show a massive improvement on the fine-tuned model on MedMCQA and a small increase on USMLE for the same model. In all likelihood, the contexts were insufficient during training, as some questions are of the "which of the below are correct" sort. Thus, including the options would help. In the future, using better prompting and FAISS retrieval would be a focus.
 
 \section{Statement of Contributions}
 
