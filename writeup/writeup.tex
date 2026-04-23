@@ -84,24 +84,26 @@ This fine-tuned model was then tested on MedMCQA, USMLE, and GPQA.
 
 \subsection{BERT}
 
-Table~\ref{tab:bert_results} reports accuracy across all three benchmarks. On both MedMCQA and USMLE, fine-tuning produced clear gains over the random baseline of 25\%, and in both cases RAG-augmented training improved over standard fine-tuning, suggesting that prepending retrieved passages during training provides useful signal beyond the QA data alone. As for BioBERT without any fine-tuning, it consistently scored below the random baseline and below fine-tuned BERT, suggesting that biomedical pre-training alone, without task-specific fine-tuning, is insufficient for multiple-choice QA. On GPQA-Diamond, all three models fell below the random baseline. 
+Table~\ref{tab:bert_results} reports accuracy across all three benchmarks. On both MedMCQA and USMLE, fine-tuning produced clear gains over the random baseline of 25\%, and in both cases RAG-augmented training improved over standard fine-tuning, suggesting that prepending retrieved passages during training provides useful signal beyond the QA data alone. As for BioBERT without any fine-tuning, it consistently scored below the random baseline and below fine-tuned BERT, suggesting that biomedical pre-training alone, without task-specific fine-tuning, is insufficient for multiple-choice QA. On GPQA-Diamond, all three models fell below the random baseline.
 
 \begin{table}[h]
-\centering
-\caption{Accuracy on MedMCQA, USMLE and GPQA
-Random chance is 25\% for all benchmarks.}
-\label{tab:bert_results}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Model} & \textbf{MedMCQA} & \textbf{USMLE} & \textbf{GPQA-Diamond} \\
-\midrule
-BERT (standard) & 32.11\% & 27.34\% & 22.22\% \\
-BERT (RAG) & 36.10\% & 28.99\% & 24.75\% \\
-BioBERT  & 24.96\% & 24.74\% & 22.22\% \\
-\midrule
-Random baseline    & 25.00\% & 25.00\% & 25.00\% \\
-\bottomrule
-\end{tabular}
+    \centering
+    \caption{Accuracy on MedMCQA, USMLE and GPQA
+        Random chance is 25\% for all benchmarks.}
+    \label{tab:bert_results}
+    \resizebox{\columnwidth}{!}{%
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model}  & \textbf{MedMCQA} & \textbf{USMLE} & \textbf{GPQA-Diamond} \\
+            \midrule
+            BERT (standard) & 32.11\%          & 27.34\%        & 22.22\%               \\
+            BERT (RAG)      & 36.10\%          & 28.99\%        & 24.75\%               \\
+            BioBERT         & 24.96\%          & 24.74\%        & 22.22\%               \\
+            \midrule
+            Random baseline & 25.00\%          & 25.00\%        & 25.00\%               \\
+            \bottomrule
+        \end{tabular}%
+    }
 \end{table}
 
 \subsection{T5}
@@ -171,7 +173,7 @@ BERT (standard) improved over the random baseline by roughly 7\% on MedMCQA and 
 However, the results also expose the ceiling of encoder-only models for this task. GPQA scores below random chance for all three models. This proves that GPQA questions require advanced deductive reasoning, which cannot be performed by a model that compresses its entire input into a single \texttt{[CLS]} vector and then scores options. Prepending retrieved passages helps when the answer can be read directly from the context, but is ineffective when reasoning is required.
 As for the BioBERT results, despite being pre-trained on biomedical text, it BioBERT performs below the random baseline on all three benchmarks. This indicates that domain-specific pre-training does not transfer to multiple-choice QA without task-specific fine-tuning.
 Overall, these findings suggest that encoder-only models are not well suited to graduate-level biomedical reasoning regardless of fine-tuning or retrieval
-augmentation. 
+augmentation.
 
 
 Our T5 model had an accuracy increase of $4\%$ on the MedMCQA test set but actually dropped in accuracy on the USMLE dataset when only using RAG (no fine-tuning). This is likely due to the more reasoning-heavy nature of USMLE. However, after fine-tuning, the model performed worse on both datasets overall, dipping below chance. Originally, this was caused by a collapse in the model's selection of labels (e.g: always selecting C). After fixing this, the model still performs just as poorly.
